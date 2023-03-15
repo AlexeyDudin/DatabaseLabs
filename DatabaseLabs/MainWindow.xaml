@@ -5,9 +5,58 @@
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  xmlns:local="clr-namespace:DatabaseLabs"
                  mc:Ignorable="d"
+                 x:Name="MainWindowForm"
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:converters="clr-namespace:Lab2"
                  Title="Lab2" Height="450" Width="800">
+    <mah:MetroWindow.Resources>
+        <converters:PlacementAlongTheRoadConverter x:Key="PlacementAlongTheRoadConverter"/>
+        <converters:LocalityNameConverter x:Key="LocalityNameConverter"/>
+    </mah:MetroWindow.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
 
+            <ComboBox Grid.Column="0"
+                      ItemsSource="{Binding ElementName=MainWindowForm, Path=LocalityNames, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                      mah:TextBoxHelper.UseFloatingWatermark="True"
+                      mah:TextBoxHelper.Watermark="Наименование станции"
+                      SelectedItem="{Binding ElementName=MainWindowForm, Path=SelectedLocalityName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        </Grid>
+        <Button Grid.Row="1"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Margin="5"
+                Content="Выполнить поиск"
+                Click="Button_Click"/>
+        <DataGrid Grid.Row="2"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Наименование дороги"
+                                    Width="100*"/>
+                <DataGridTextColumn Header="Расстояние"
+                                    Width="100*"/>
+                <DataGridTextColumn Header="Наименование станции"
+                                    Width="100*"/>
+                <DataGridTextColumn Header="Расположение на дороге"
+                                    Width="100*"/>
+                <DataGridTextColumn Header="Наличие станции"
+                                    Width="100*"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </mah:MetroWindow>
