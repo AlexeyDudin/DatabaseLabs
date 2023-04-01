@@ -1,9 +1,16 @@
-﻿using Application.Models.Dtos;
+﻿using DomainLab3.Models.Dtos;
+using Infrastructure.Repository;
 
 namespace Application
 {
     public class CourceService : ICourceService
     {
+        private readonly ICourceRepository _courceRepository;
+        public CourceService(ICourceRepository courceRepository)
+        {
+            _courceRepository = courceRepository;
+        }
+
         public SaveCourceParamsDto DeleteCource(Guid courceId)
         {
             throw new NotImplementedException();
@@ -16,7 +23,7 @@ namespace Application
 
         public SaveCourceParamsDto SaveCource(SaveCourceParamsDto courceParams)
         {
-            throw new NotImplementedException();
+            return _courceRepository.SaveCourse(courceParams);
         }
 
         public SaveEnrollmentParamsDto SaveEnrollment(SaveEnrollmentParamsDto enrollmentParams)

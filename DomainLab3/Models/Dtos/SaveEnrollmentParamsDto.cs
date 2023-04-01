@@ -1,6 +1,6 @@
-﻿namespace Application.Models.Dtos
+﻿namespace DomainLab3.Models.Dtos
 {
-    public class GetCourceStatusParamsDto
+    public class SaveEnrollmentParamsDto
     {
         public Guid EnrollmentId { get; set; } = Guid.Empty;
         public Guid CourceId { get; set; } = Guid.Empty;

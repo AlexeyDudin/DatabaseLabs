@@ -1,4 +1,4 @@
-﻿namespace Application.Models.Dtos
+﻿namespace DomainLab3.Models.Dtos
 {
     public class SaveMatherialStatusParamsDto
     {

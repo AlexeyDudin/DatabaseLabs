@@ -1,17 +1,17 @@
-﻿using Infrastructure.DbWorkers.Common;
-using System.Reflection.Metadata;
+﻿using DomainLab3.Models.Dtos;
+using Infrastructure.DbWorkers.Common;
 
 namespace Infrastructure.DbWorkers
 {
     public interface IDbConnection
     {
-        public IDbConnection OpenConnection();
+        public void OpenConnection();
         public DbDto Execute(string sqlRequest);
         public DbDto Execute(string sqlRequest, List<Parameter> parametersList);
-        public IDbConnection BeginTransaction();
-        public IDbConnection Commit();
-        public IDbConnection Rollback();
-        public IDbConnection CloseConnection();
+        public void BeginTransaction();
+        public void Commit();
+        public void Rollback();
+        public void CloseConnection();
 
     }
 }

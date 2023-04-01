@@ -1,6 +1,6 @@
-﻿using System.Data.SqlClient;
-using System.Reflection.Metadata;
-using Infrastructure.DbWorkers;
+﻿using System.Data;
+using System.Data.SqlClient;
+using DomainLab3.Models.Dtos;
 using Infrastructure.DbWorkers.Common;
 
 namespace Infrastructure.DbWorkers
@@ -17,39 +17,93 @@ namespace Infrastructure.DbWorkers
             CONNECTION_STRING = connectionString;
         }
 
-        public IDbConnection BeginTransaction()
+        public void BeginTransaction()
         {
-            throw new NotImplementedException();
+            transaction = connection.BeginTransaction();
         }
 
-        public IDbConnection CloseConnection()
+        public void CloseConnection()
         {
-            throw new NotImplementedException();
+            connection.Close();
         }
 
-        public IDbConnection Commit()
+        public void Commit()
         {
-            throw new NotImplementedException();
+            transaction.Commit();
         }
 
         public DbDto Execute(string sqlRequest)
         {
-            throw new NotImplementedException();
+            return Execute(sqlRequest, new List<Parameter>());
         }
 
         public DbDto Execute(string sqlRequest, List<Parameter> parametersList)
         {
-            throw new NotImplementedException();
+            command = new SqlCommand();
+            command.Connection = connection;
+            command.Transaction = transaction;
+            command.CommandType = CommandType.Text;
+            command.CommandText = string.Empty;
+
+            Prepare(sqlRequest, parametersList);
+            var databaseDto = ReadDatabaseResponseResponse();
+            return databaseDto;
         }
 
-        public IDbConnection OpenConnection()
+        public void OpenConnection()
         {
-            return new MSSQLConnection("Host=localhost; Database=ips_labs_3; Username=postgres; Password=12345678; Port= 5432");
+            connection = new SqlConnection(CONNECTION_STRING);
+            connection.Open();
         }
 
-        public IDbConnection Rollback()
+        public void Rollback()
         {
-            throw new NotImplementedException();
+            transaction.Rollback();
+        }
+
+        private MSSQLConnection Prepare(string sqlRequest, List<Parameter> parametersList)
+        {
+            command.CommandText = sqlRequest;
+            // command.Prepare();
+            if (parametersList.Count == 0) 
+                return this;
+            foreach (var tmpParameter in parametersList)
+            {
+                var parameter = new SqlParameter
+                {
+                    ParameterName = tmpParameter.Name,
+                    Value = tmpParameter.ValueType switch
+                    {
+                        "" => tmpParameter.Value,
+                        "int" => int.Parse(tmpParameter.Value),
+                        "bool" => bool.Parse(tmpParameter.Value),
+                        _ => tmpParameter.Value
+                    }
+                };
+
+                command.Parameters.Add(parameter);
+            }
+
+            return this;
+        }
+
+        private DbDto ReadDatabaseResponseResponse()
+        {
+            var dataReader = command.ExecuteReader();
+            var databaseDto = new DbDto();
+            while (dataReader.Read())
+            {
+                var stringInDatabaseResponse = new List<string>();
+                for (var i = 0; i < dataReader.FieldCount; i++)
+                {
+                    stringInDatabaseResponse.Add(dataReader.GetValue(i).ToString());
+                }
+
+                databaseDto.Add(stringInDatabaseResponse);
+            }
+
+            dataReader.Close();
+            return databaseDto;
         }
     }
 }

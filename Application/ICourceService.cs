@@ -1,4 +1,4 @@
-﻿using Application.Models.Dtos;
+﻿using DomainLab3.Models.Dtos;
 namespace Application
 {
     public interface ICourceService

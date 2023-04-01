@@ -1,4 +1,4 @@
-﻿using Application.Models.Dtos;
+﻿using DomainLab3.Models.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lab3.Controllers

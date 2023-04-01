@@ -1,5 +1,8 @@
 using Application;
+using Infrastructure.DbWorkers;
+using Infrastructure.Repository;
 using Lab3;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +14,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICourceApiService, CourceApiService>();
 builder.Services.AddScoped<ICourceService, CourceService>();
+builder.Services.AddScoped<ICourceRepository, CourceRepository>();
+builder.Services.AddScoped<IDbConnection, MSSQLConnection>(serviceProvider => new MSSQLConnection(builder.Configuration.GetConnectionString("DbConnection")));
 
 var app = builder.Build();
 

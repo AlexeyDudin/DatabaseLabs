@@ -1,5 +1,5 @@
 ﻿using Application;
-using Application.Models.Dtos;
+using DomainLab3.Models.Dtos;
 using Lab3.ResponceWorker;
 
 namespace Lab3
