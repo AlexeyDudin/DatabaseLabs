@@ -99,6 +99,9 @@ namespace Infrastructure.Repository
                     };
                     connection.Execute(SOFT_DELETE_COURCE, insertCourseParameters);
                 }
+
+                // some execute commands
+                connection.Commit();
             }
             catch (Exception ex)
             {
