@@ -1,4 +1,5 @@
 ﻿using DomainLab3.Models.Dtos;
+using Lab3.Converters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lab3.Controllers
@@ -17,7 +18,7 @@ namespace Lab3.Controllers
         [HttpPost, Route("add")]
         public IActionResult SaveCource([FromBody] SaveCourceParamsDto courceParams)
         {
-            return GetResponse(_courceApiService.SaveCource(courceParams));
+            return GetResponse(_courceApiService.SaveCource(courceParams.ConvertToCource()));
         }
 
         [HttpPost, Route("delete")]

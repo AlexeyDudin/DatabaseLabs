@@ -1,9 +1,12 @@
-﻿using DomainLab3.Models.Dtos;
+﻿using DomainLab3;
+using DomainLab3.Models.Dtos;
 
 namespace Infrastructure.Repository
 {
     public interface ICourceRepository
     {
-        SaveCourceParamsDto SaveCourse(SaveCourceParamsDto saveCourseParams);
+        Cource SaveCourse(Cource saveCourseParams);
+        Cource GetCourceById(Guid courceId);
+        void DeleteCource(Guid courceId);
     }
 }

@@ -75,8 +75,9 @@ namespace Infrastructure.DbWorkers
                     Value = tmpParameter.ValueType switch
                     {
                         "" => tmpParameter.Value,
-                        "int" => int.Parse(tmpParameter.Value),
-                        "bool" => bool.Parse(tmpParameter.Value),
+                        "string" => tmpParameter.Value,
+                        "int" => Int32.Parse(tmpParameter.Value.ToString()),
+                        "bool" => Boolean.Parse(tmpParameter.Value.ToString()),
                         _ => tmpParameter.Value
                     }
                 };
@@ -96,7 +97,10 @@ namespace Infrastructure.DbWorkers
                 var stringInDatabaseResponse = new List<string>();
                 for (var i = 0; i < dataReader.FieldCount; i++)
                 {
-                    stringInDatabaseResponse.Add(dataReader.GetValue(i).ToString());
+                    if (dataReader.GetValue(i) == null)
+                        stringInDatabaseResponse.Add(String.Empty);
+                    else
+                        stringInDatabaseResponse.Add(dataReader.GetValue(i).ToString());
                 }
 
                 databaseDto.Add(stringInDatabaseResponse);

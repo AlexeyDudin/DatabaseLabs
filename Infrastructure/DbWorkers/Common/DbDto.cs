@@ -8,16 +8,16 @@ namespace Infrastructure.DbWorkers.Common
 {
     public class DbDto
     {
-        private List<List<string>> response { get; set; } = new List<List<string>>();
+        private List<List<string>> Response { get; set; } = new List<List<string>>();
 
         public void Add(List<string> inputList)
         {
-            response.Add(inputList);
+            Response.Add(inputList);
         }
 
         public List<List<string>> Get()
         {
-            return response;
+            return Response;
         }
     }
 }

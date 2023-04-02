@@ -1,4 +1,6 @@
-﻿using DomainLab3.Models.Dtos;
+﻿using Application.Exceptions;
+using DomainLab3;
+using DomainLab3.Models.Dtos;
 using Infrastructure.Repository;
 
 namespace Application
@@ -11,9 +13,13 @@ namespace Application
             _courceRepository = courceRepository;
         }
 
-        public SaveCourceParamsDto DeleteCource(Guid courceId)
+        public Cource DeleteCource(Guid courceId)
         {
-            throw new NotImplementedException();
+            Cource result = _courceRepository.GetCourceById(courceId);
+            if (result == null)
+                throw new CourceNotFoudException($"Курс с идентификатором {courceId} не найден");
+            _courceRepository.DeleteCource(courceId);
+            return result;
         }
 
         public CourceStatusDataDto GetCourceStatus(GetCourceStatusParamsDto matherialParams)
@@ -21,9 +27,9 @@ namespace Application
             throw new NotImplementedException();
         }
 
-        public SaveCourceParamsDto SaveCource(SaveCourceParamsDto courceParams)
+        public Cource SaveCource(Cource cource)
         {
-            return _courceRepository.SaveCourse(courceParams);
+            return _courceRepository.SaveCourse(cource);
         }
 
         public SaveEnrollmentParamsDto SaveEnrollment(SaveEnrollmentParamsDto enrollmentParams)

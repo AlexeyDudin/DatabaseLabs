@@ -1,13 +1,16 @@
-﻿using DomainLab3.Models.Dtos;
+﻿using DomainLab3;
+using DomainLab3.Models.Dtos;
+using Infrastructure.Converters;
 using Infrastructure.DbWorkers;
 
 namespace Infrastructure.Repository
 {
     public class CourceRepository : ICourceRepository
     {
-        private const string INSERT_COURCE = @"INSERT INTO course VALUES( @courseId );";
-        private const string INSERT_MODULE = @"INSERT INTO course_module VALUES(moduleId, courseId, isRequired);";
-        private const string GET_ALL_COURCE = @"SELECT * FROM course";
+        private const string INSERT_COURCE = @"INSERT INTO course([course_id]) VALUES( @courseId );";
+        private const string INSERT_MODULE = @"INSERT INTO course_matherial([module_id], [course_id], [is_required]) VALUES(@moduleId, @courseId, @isRequired);";
+        private const string GET_ALL_ACTIVE_COURCE = @"SELECT * FROM course WHERE [deleted_at] IS NULL";
+        private const string GET_COURCE_BY_ID = @"SELECT * FROM course WHERE [course_id] = @courceId AND [deleted_at] IS NULL";
         private const string SOFT_DELETE_COURCE_STATUS = @"
                 UPDATE course_status
                 SET
@@ -24,8 +27,8 @@ namespace Infrastructure.Repository
                     INNER JOIN course_enrollment AS ce ON cms.enrollment_id = ce.enrollment_id 	
                 WHERE course_module_status.enrollment_id = ce.enrollment_id AND ce.course_id = @courseId;
                 ";
-        private const string SOFT_DELETE_COURCE_MODULE = @"
-                UPDATE course_module
+        private const string SOFT_DELETE_COURCE_MATHERIAL = @"
+                UPDATE course_matherial
                 SET
                     deleted_at = now()
                 WHERE course_id = @courseId;    
@@ -47,17 +50,87 @@ namespace Infrastructure.Repository
             this.connection = connection;
         }
 
-        public SaveCourceParamsDto SaveCourse(SaveCourceParamsDto saveCourseParams)
+        public void DeleteCource(Guid courceId)
         {
-            var requireModuleIds = saveCourseParams.RequiredModuleIds;
-            var moduleIds = saveCourseParams.ModuleIds;
-
-            //Убираем повторы
-            foreach (var requireModule in requireModuleIds)
+            try
             {
-                moduleIds.Remove(requireModule);
+                connection.OpenConnection();
+                connection.BeginTransaction();
+                {
+                    List<Parameter> insertCourseParameters = new List<Parameter>
+                    {
+                        new Parameter("courseId", courceId.ToString())
+                    };
+                    connection.Execute(SOFT_DELETE_COURCE_STATUS, insertCourseParameters);
+                }
+                {
+                    List<Parameter> insertCourseParameters = new List<Parameter>
+                    {
+                        new Parameter("courseId", courceId.ToString())
+                    };
+                    connection.Execute(SOFT_DELETE_COURCE_MODULE_STATUS, insertCourseParameters);
+                }
+                {
+                    List<Parameter> insertCourseParameters = new List<Parameter>
+                    {
+                        new Parameter("courseId", courceId.ToString())
+                    };
+                    connection.Execute(SOFT_DELETE_COURCE_MATHERIAL, insertCourseParameters);
+                }
+                {
+                    List<Parameter> insertCourseParameters = new List<Parameter>
+                    {
+                        new Parameter("courseId", courceId.ToString())
+                    };
+                    connection.Execute(HARD_DELETE_COURCE_ENROLLMENT, insertCourseParameters);
+                }
+                {
+                    List<Parameter> insertCourseParameters = new List<Parameter>
+                    {
+                        new Parameter("courseId", courceId.ToString())
+                    };
+                    connection.Execute(SOFT_DELETE_COURCE, insertCourseParameters);
+                }
             }
+            catch (Exception ex)
+            {
+                connection.Rollback();
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.CloseConnection();
+            }
+        }
 
+        public Cource GetCourceById(Guid courceId)
+        {
+            Cource result = null;
+            try
+            {
+                connection.OpenConnection();
+                connection.BeginTransaction();
+                List<Parameter> insertCourseParameters = new List<Parameter>
+                {
+                    new Parameter("courseId", courceId.ToString())
+                };
+                result = connection.Execute(GET_COURCE_BY_ID, insertCourseParameters).ConvertToCource();
+            }
+            catch (Exception ex)
+            {
+                connection.Rollback();
+                result = null;
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.CloseConnection();
+            }
+            return result;
+        }
+
+        public Cource SaveCourse(Cource cource)
+        {
             try
             {
                 connection.OpenConnection();
@@ -66,23 +139,23 @@ namespace Infrastructure.Repository
                 {
                     List<Parameter> insertCourseParameters = new List<Parameter>
                     {
-                        new Parameter("courseId", saveCourseParams.CourceId.ToString())
+                        new Parameter("courseId", cource.Id.ToString())
                     };
                     connection.Execute(INSERT_COURCE, insertCourseParameters);
                 }
 
-                for (var i = 0; i < moduleIds.Count; i++)
+                for (var i = 0; i < cource.CourceMatherials.Count; i++)
                 {
                     var insertModuleSql = INSERT_MODULE;
 
-                    insertModuleSql = insertModuleSql.Replace("moduleId", "@moduleId" + i);
-                    insertModuleSql = insertModuleSql.Replace("courseId", "@courseId" + i);
-                    insertModuleSql = insertModuleSql.Replace("isRequired", "@isRequired" + i);
+                    insertModuleSql = insertModuleSql.Replace("@moduleId", "@moduleId" + i);
+                    insertModuleSql = insertModuleSql.Replace("@courseId", "@courseId" + i);
+                    insertModuleSql = insertModuleSql.Replace("@isRequired", "@isRequired" + i);
 
                     List<Parameter> insertModuleParameters = new List<Parameter>();
-                    insertModuleParameters.Add(new Parameter("moduleId" + i, moduleIds[i].ToString()));
-                    insertModuleParameters.Add(new Parameter("courseId" + i, saveCourseParams.CourceId.ToString()));
-                    insertModuleParameters.Add(new Parameter("isRequired" + i, "false"));
+                    insertModuleParameters.Add(new Parameter("moduleId" + i, cource.CourceMatherials[i].ModuleId.ToString()));
+                    insertModuleParameters.Add(new Parameter("courseId" + i, cource.Id.ToString()));
+                    insertModuleParameters.Add(new Parameter("isRequired" + i, cource.CourceMatherials[i].IsRequired));
                     connection.Execute(insertModuleSql, insertModuleParameters);
                 }
 
@@ -99,7 +172,7 @@ namespace Infrastructure.Repository
                 connection.CloseConnection();
             }
 
-            return saveCourseParams;
+            return cource;
         }
     }
 }

@@ -1,14 +1,23 @@
-﻿DROP TABLE IF EXISTS course_enrollment, course_module, course, course_status, course_module_status;
+﻿DROP TABLE IF EXISTS course_enrollment
+GO
+DROP TABLE IF EXISTS course_matherial
+GO
+DROP TABLE IF EXISTS course
+GO
+DROP TABLE IF EXISTS course_status
+GO
+DROP TABLE IF EXISTS course_module_status
+GO
 
 -- GETUTCDATE() - можно использовать для генерации времени
 CREATE TABLE [Lab3].[dbo].[course]
 (
 	[course_id] UNIQUEIDENTIFIER NOT NULL PRIMARY KEY DEFAULT NEWID(),
-	[version] INT NOT NULL,
+	[version] INT NOT NULL DEFAULT 0,
 	[create_at] DATETIME NOT NULL DEFAULT GETUTCDATE(),
 	[updated_at] DATETIME DEFAULT NULL,
 	[deleted_at] DATETIME DEFAULT NULL
-);
+)
 
 CREATE TABLE [Lab3].[dbo].[course_status]
 (
@@ -18,11 +27,11 @@ CREATE TABLE [Lab3].[dbo].[course_status]
 	[deleted_at] DATETIME DEFAULT NULL	
 );
 
-CREATE TABLE [Lab3].[dbo].[course_module]
+CREATE TABLE [Lab3].[dbo].[course_matherial]
 (
 	[module_id] UNIQUEIDENTIFIER NOT NULL,	
 	[course_id] UNIQUEIDENTIFIER NOT NULL,
-	[is_required] VARCHAR(5),
+	[is_required] BIT,
 	[create_at] DATETIME NOT NULL DEFAULT GETUTCDATE(),
 	[updated_at] DATETIME DEFAULT NULL,
 	[deleted_at] DATETIME DEFAULT NULL,
@@ -39,7 +48,7 @@ CREATE TABLE [Lab3].[dbo].[course_module_status]
 	deleted_at DATETIME DEFAULT NULL,
 	PRIMARY KEY (enrollment_id, module_id),
 	FOREIGN KEY (enrollment_id) REFERENCES course_status(enrollment_id) ON UPDATE CASCADE ON DELETE CASCADE,
-	FOREIGN KEY (module_id) REFERENCES course_module(module_id) ON UPDATE CASCADE ON DELETE CASCADE
+	FOREIGN KEY (module_id) REFERENCES course_matherial(module_id) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE [Lab3].[dbo].[course_enrollment]
@@ -50,6 +59,7 @@ CREATE TABLE [Lab3].[dbo].[course_enrollment]
 	FOREIGN KEY(enrollment_id) REFERENCES course_status(enrollment_id) ON UPDATE CASCADE ON DELETE CASCADE,
 	PRIMARY KEY(enrollment_id)	
 );
+GO
 
 
 --SELECT crs.course_id, crs.create_at, crs.updated_at, c_m.course_id, c_m.is_required

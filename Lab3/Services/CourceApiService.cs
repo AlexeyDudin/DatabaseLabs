@@ -1,5 +1,7 @@
 ﻿using Application;
+using DomainLab3;
 using DomainLab3.Models.Dtos;
+using Lab3.Converters;
 using Lab3.ResponceWorker;
 
 namespace Lab3
@@ -16,7 +18,7 @@ namespace Lab3
         {
             try
             {
-                return new Responce(_courceService.DeleteCource(courceId), ResponceCode.Ok);
+                return new Responce(_courceService.DeleteCource(courceId).ConvertToCourceParamsDto(), ResponceCode.Ok);
             }
             catch (Exception ex)
             {
@@ -36,11 +38,11 @@ namespace Lab3
             }
         }
 
-        public Responce SaveCource(SaveCourceParamsDto courceParams)
+        public Responce SaveCource(Cource cource)
         {
             try
             {
-                return new Responce(_courceService.SaveCource(courceParams), ResponceCode.Ok);
+                return new Responce(_courceService.SaveCource(cource).ConvertToCourceParamsDto(), ResponceCode.Ok);
             }
             catch (Exception ex)
             {
