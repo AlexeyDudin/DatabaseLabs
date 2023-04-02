@@ -10,27 +10,35 @@ namespace Infrastructure.Repository
         private const string INSERT_COURCE = @"INSERT INTO course([course_id]) VALUES( @courseId );";
         private const string INSERT_MODULE = @"INSERT INTO course_matherial([module_id], [course_id], [is_required]) VALUES(@moduleId, @courseId, @isRequired);";
         private const string GET_ALL_ACTIVE_COURCE = @"SELECT * FROM course WHERE [deleted_at] IS NULL";
-        private const string GET_COURCE_BY_ID = @"SELECT * FROM course WHERE [course_id] = @courceId AND [deleted_at] IS NULL";
+        private const string GET_COURCE_BY_ID = @"SELECT * FROM course WHERE [course_id] = @courseId AND [deleted_at] IS NULL";
         private const string SOFT_DELETE_COURCE_STATUS = @"
                 UPDATE course_status
                 SET
-                    deleted_at = now()
-                FROM course_status AS cs 
-                    INNER JOIN course_enrollment AS ce ON cs.enrollment_id = ce.enrollment_id 	
-                WHERE course_status.enrollment_id = cs.enrollment_id AND ce.course_id = @courseId;
+                    deleted_at = GETUTCDATE()
+                FROM course_status
+                WHERE [enrollment_id] IN
+                (
+                    SELECT enrollment_id
+                    FROM [course_enrollment]
+                    WHERE [course_id] = @courseId
+                );
                 ";
         private const string SOFT_DELETE_COURCE_MODULE_STATUS = @"
                 UPDATE course_module_status
                 SET
-                    deleted_at = now()
-                FROM course_module_status AS cms 
-                    INNER JOIN course_enrollment AS ce ON cms.enrollment_id = ce.enrollment_id 	
-                WHERE course_module_status.enrollment_id = ce.enrollment_id AND ce.course_id = @courseId;
+                    deleted_at = GETUTCDATE()
+                FROM course_module_status 	
+                WHERE [enrollment_id] IN 
+                (
+                    SELECT [enrollment_id]
+                    FROM [course_enrollment]
+                    WHERE [course_id] = @courseId
+                );
                 ";
         private const string SOFT_DELETE_COURCE_MATHERIAL = @"
                 UPDATE course_matherial
                 SET
-                    deleted_at = now()
+                    deleted_at = GETUTCDATE()
                 WHERE course_id = @courseId;    
                 ";
         private const string HARD_DELETE_COURCE_ENROLLMENT = @"
@@ -39,7 +47,7 @@ namespace Infrastructure.Repository
         private const string SOFT_DELETE_COURCE = @"
                 UPDATE course
                 SET
-                    deleted_at = now()
+                    deleted_at = GETUTCDATE()
                 WHERE course_id = @courseId; 
                 ";
 

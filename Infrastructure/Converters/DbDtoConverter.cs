@@ -7,7 +7,7 @@ namespace Infrastructure.Converters
     {
         public static Cource ConvertToCource(this DbDto dto)
         {
-            if (dto == null)
+            if (dto == null || dto.Get().Count == 0)
                 return null;
             Cource result = new Cource();
             result.Id = Guid.Parse(dto.Get()[0][0]);
