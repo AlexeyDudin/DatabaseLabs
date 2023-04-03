@@ -1,7 +1,12 @@
-﻿namespace DomainLab3
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace DomainLab3
 {
+    [Table("cource")]
     public class Cource
     {
+        [Key]
         public Guid Id { get; set; } = Guid.NewGuid();
         public int Version { get; set; } = 0;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

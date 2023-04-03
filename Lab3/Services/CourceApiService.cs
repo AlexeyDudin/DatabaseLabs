@@ -66,7 +66,7 @@ namespace Lab3
         {
             try
             {
-                return new Responce(_courceService.SaveMatherial(matherialParams), ResponceCode.Ok);
+                return new Responce(_courceService.SaveMatherial(matherialParams.ConvertToCourceModule()).ConvertToMatherialStatusParamsDto(), ResponceCode.Ok);
             }
             catch (Exception ex)
             {

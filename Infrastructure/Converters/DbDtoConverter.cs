@@ -20,7 +20,7 @@ namespace Infrastructure.Converters
             return result;
         }
 
-        public static List<CourceMatherial> ConvertToMatherials(this DbDto dto, Cource cource)
+        public static List<CourceMatherial> ConvertToMatherials(this DbDto dto, Cource cource = null)
         {
             if (dto == null || dto.Get().Count == 0)
                 return null;
@@ -43,7 +43,30 @@ namespace Infrastructure.Converters
             return result;
         }
 
-        public static CourceModule ConvertToModule(this DbDto dto, Cource cource)
+        public static CourceMatherial ConvertToMatherials(this DbDto dto, CourceModule module)
+        {
+            if (dto == null || dto.Get().Count == 0)
+                return null;
+
+            CourceMatherial courceMatherial = new CourceMatherial();
+            foreach (var line in dto.Get())
+            {
+                courceMatherial.ModuleId = Guid.Parse(line[0]);
+                courceMatherial.CourceId = Guid.Parse(line[1]);
+                courceMatherial.IsRequired = Boolean.Parse(line[2]);
+                if (!string.IsNullOrWhiteSpace(line[3]))
+                    courceMatherial.CreatedAt = DateTime.Parse(line[3]);
+                if (!string.IsNullOrWhiteSpace(line[4]))
+                    courceMatherial.UpdatedAt = DateTime.Parse(line[4]);
+                courceMatherial.CourceModule = module;
+                module.Matherial = courceMatherial;
+                if (!string.IsNullOrEmpty(line[5]))
+                    continue;
+            }
+            return courceMatherial;
+        }
+
+        public static CourceModule ConvertToModule(this DbDto dto, Cource cource = null)
         {
             if (dto == null || dto.Get().Count == 0)
                 return null;
@@ -54,9 +77,12 @@ namespace Infrastructure.Converters
             result.Duration = Int32.Parse(dto.Get()[0][3]);
             if (!string.IsNullOrEmpty(dto.Get()[0][4]))
                 return null;
-            var matherial = cource.CourceMatherials.Where(m => m.ModuleId == result.ModuleId).SingleOrDefault();
-            result.Matherial = matherial;
-            matherial.CourceModule = result;
+            if (cource != null)
+            {
+                var matherial = cource.CourceMatherials.Where(m => m.ModuleId == result.ModuleId).SingleOrDefault();
+                result.Matherial = matherial;
+                matherial.CourceModule = result;
+            }
             return result;
         }
 
@@ -71,16 +97,16 @@ namespace Infrastructure.Converters
                 courceEnrollment.EnrollmentId = Guid.Parse(line[0]);
                 courceEnrollment.CourceId = Guid.Parse(line[1]);
                 courceEnrollment.Cource = cource;
-                if (!string.IsNullOrEmpty(line[5]))
-                    continue;
                 result.Add(courceEnrollment);
             }
 
             foreach (var module in cource.CourceMatherials)
             {
                 var enrollment = cource.CourceEnrollments.Where(e => e.EnrollmentId == module.CourceModule.EnrollmentId).FirstOrDefault();
-                module.CourceModule.Enrollment = enrollment;
-                enrollment.CourceModule = module.CourceModule;
+                if (module.CourceModule != null)
+                    module.CourceModule.Enrollment = enrollment;
+                if (enrollment != null)
+                    enrollment.CourceModule = module.CourceModule;
             }
 
             return result;

@@ -31,7 +31,7 @@ CREATE TABLE [Lab3].[dbo].[course_matherial]
 (
 	[module_id] UNIQUEIDENTIFIER NOT NULL,	
 	[course_id] UNIQUEIDENTIFIER NOT NULL,
-	[is_required] BIT,
+	[is_required] BIT DEFAULT 'FALSE',
 	[create_at] DATETIME NOT NULL DEFAULT GETUTCDATE(),
 	[updated_at] DATETIME DEFAULT NULL,
 	[deleted_at] DATETIME DEFAULT NULL,
@@ -43,8 +43,8 @@ CREATE TABLE [Lab3].[dbo].[course_module_status]
 (
 	enrollment_id UNIQUEIDENTIFIER NOT NULL ,
 	module_id UNIQUEIDENTIFIER NOT NULL ,
-	progress NUMERIC(3, 0),
-	duration INT,
+	progress NUMERIC(3, 0) DEFAULT 0,
+	duration INT DEFAULT 0,
 	deleted_at DATETIME DEFAULT NULL,
 	PRIMARY KEY (enrollment_id, module_id),
 	FOREIGN KEY (enrollment_id) REFERENCES course_status(enrollment_id) ON UPDATE CASCADE ON DELETE CASCADE,

@@ -9,13 +9,22 @@ namespace Infrastructure.Repository
     {
         private const string INSERT_COURCE = @"INSERT INTO course([course_id]) VALUES( @courseId );";
         private const string INSERT_MODULE = @"INSERT INTO course_matherial([module_id], [course_id], [is_required]) VALUES(@moduleId, @courseId, @isRequired);";
-        private const string INSERT_ENROLLMENT = @"INSERT INTO cource_enrollment([enrollment_id], [course_id]) VALUES(@enrollmentId, @courseId);";
+        private const string INSERT_COURCE_STATUS = @"INSERT INTO course_status([enrollment_id]) VALUES (@enrollmentId)";
+        private const string INSERT_ENROLLMENT = @"INSERT INTO course_enrollment([enrollment_id], [course_id]) VALUES(@enrollmentId, @courseId);";
+        private const string INSERT_COURCE_MODULE_STATUS = @"INSERT INTO course_module_status([enrollment_id], [module_id]) VALUES(@enrollmentId, @moduleId)";
         private const string GET_ALL_ACTIVE_COURCE = @"SELECT * FROM course WHERE [deleted_at] IS NULL;";
         private const string GET_COURCE_BY_ID = @"SELECT * FROM course WHERE [course_id] = @courseId AND [deleted_at] IS NULL;";
         private const string GET_COURCE_MATHERIALS_BY_ID = @"SELECT * FROM [course_matherial] WHERE [course_id] = @courseId;";
+        private const string GET_COURCE_MATHERIAL_BY_MODULE_ID = @"SELECT * FROM [course_matherial] WHERE [module_id] = @moduleId";
         private const string GET_COURCE_MODULE_STATUS_BY_ID = @"SELECT * FROM [course_module_status] WHERE [module_id] = @moduleId;";
         private const string GET_COURCE_ENROLLMENTS_BY_ID = @"SELECT * FROM [course_enrollment] WHERE [course_id] = @courseId;";
         private const string GET_COURCE_STATUS_BY_ID = @"SELECT * FROM [course_status] WHERE [enrollment_id] = @enrollmentId;";
+        private const string GET_COURCE_MODULE_STATUS_BY_IDS = @"SELECT * FROM [course_module_status] WHERE [module_id] = @moduleId AND [enrollment_id] = @enrollmentId";
+        private const string UPDATE_COURCE_MODULE_STATUS = @"
+                    UPDATE [course_module_status]
+                    SET [progress] = @progress, [duration] = @duration
+                    WHERE [enrollment_id] = @enrollmentId AND [module_id] = @moduleId
+                    ";
         //private const string GET_COURCE_STATUS_BY_IDS = @$"
         //        SELECT *
         //        FROM [course_status]
@@ -257,9 +266,9 @@ namespace Infrastructure.Repository
             }
         }
         
-        public Cource GetFullCourceInfoByStatus(GetCourceStatusParamsDto matherialParams)
+        public Cource GetFullCourceInfoByStatus(Guid courceId)
         {
-            Cource result = GetCourceById(matherialParams.CourceId);
+            Cource result = GetCourceById(courceId);
             if (result != null)
             {
                 FillCourseMatherials(result);
@@ -316,7 +325,7 @@ namespace Infrastructure.Repository
             return cource;
         }
 
-        public CourceEnrollment SaveEnrollment(CourceEnrollment enrollmentParam)
+        public CourceEnrollment SaveEnrollment(CourceEnrollment enrollmentParam, Cource cource)
         {
             CourceEnrollment result = enrollmentParam;
             try
@@ -325,12 +334,30 @@ namespace Infrastructure.Repository
                 connection.BeginTransaction();
 
                 {
+                    List<Parameter> insertCourceParameters = new List<Parameter>()
+                    {
+                        new Parameter("enrollmentId", enrollmentParam.EnrollmentId.ToString())
+                    };
+                    connection.Execute(INSERT_COURCE_STATUS, insertCourceParameters);
+                }
+                {
                     List<Parameter> insertCourseParameters = new List<Parameter>
                     {
                         new Parameter("enrollmentId", enrollmentParam.EnrollmentId.ToString()),
                         new Parameter("courseId", enrollmentParam.CourceId.ToString())
                     };
-                    connection.Execute(INSERT_COURCE, insertCourseParameters);
+                    connection.Execute(INSERT_ENROLLMENT, insertCourseParameters);
+                }
+                {
+                    foreach (var matherial in cource.CourceMatherials)
+                    {
+                        List<Parameter> insertCourceParameters = new List<Parameter>()
+                        {
+                            new Parameter("enrollmentId", enrollmentParam.EnrollmentId.ToString()),
+                            new Parameter("moduleId", matherial.ModuleId.ToString())
+                        };
+                        connection.Execute(INSERT_COURCE_MODULE_STATUS, insertCourceParameters);
+                    }
                 }
                 connection.Commit();
             }
@@ -346,5 +373,75 @@ namespace Infrastructure.Repository
             }
             return result;
         }
+
+        public CourceModule GetModuleStatus(CourceModule courceModule)
+        {
+            CourceModule result;
+            try
+            {
+                connection.OpenConnection();
+                connection.BeginTransaction();
+
+                {
+                    List<Parameter> insertCourceParameters = new List<Parameter>()
+                    {
+                        new Parameter("enrollmentId", courceModule.EnrollmentId.ToString()),
+                        new Parameter("moduleId", courceModule.ModuleId.ToString()),
+                    };
+                    result = connection.Execute(GET_COURCE_MODULE_STATUS_BY_IDS, insertCourceParameters).ConvertToModule();
+                }
+                {
+                    List<Parameter> insertCourceParameters = new List<Parameter>()
+                    {
+                        new Parameter("moduleId", courceModule.ModuleId.ToString()),
+                    };
+                    connection.Execute(GET_COURCE_MATHERIAL_BY_MODULE_ID, insertCourceParameters).ConvertToMatherials(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                connection.Rollback();
+                result = null;
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.CloseConnection();
+            }
+            return result;
+        }
+
+        public CourceModule UpdateMatherialStatus(CourceModule courceModule)
+        {
+            CourceModule result = courceModule;
+            try
+            {
+                connection.OpenConnection();
+                connection.BeginTransaction();
+                {
+                    List<Parameter> insertCourceParameters = new List<Parameter>()
+                    {
+                        new Parameter("progress", courceModule.Progress.ToString()),
+                        new Parameter("duration", courceModule.Duration.ToString()),
+                        new Parameter("enrollmentId", courceModule.EnrollmentId.ToString()),
+                        new Parameter("moduleId", courceModule.ModuleId.ToString()),
+                    };
+                    connection.Execute(UPDATE_COURCE_MODULE_STATUS, insertCourceParameters);
+                }
+                connection.Commit();
+            }
+            catch (Exception ex)
+            {
+                connection.Rollback();
+                result = null;
+                throw new Exception(ex.Message);
+            }
+            finally
+            {
+                connection.CloseConnection();
+            }
+            return result;
+        }
+
     }
 }

@@ -2,6 +2,7 @@
 
 namespace DomainLab3
 {
+    [Table("cource_enrollment")]
     public class CourceEnrollment
     {
         public Guid EnrollmentId { get; set; } = Guid.Empty;

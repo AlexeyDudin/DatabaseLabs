@@ -2,6 +2,7 @@
 
 namespace DomainLab3
 {
+    [Table("cource_matherial")]
     public class CourceMatherial
     {
         public Guid ModuleId { get; set; } = Guid.Empty;

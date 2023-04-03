@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DomainLab3
 {
+    [Table("cource_module")]
     public class CourceModule
     {
         public Guid EnrollmentId { get; set; } = Guid.Empty;
