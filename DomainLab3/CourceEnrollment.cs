@@ -9,6 +9,9 @@ namespace DomainLab3
 
         [ForeignKey(nameof(EnrollmentId))]
         public CourceStatus CourceStatus { get; set; }
+
+        [ForeignKey(nameof(EnrollmentId))]
+        public CourceModule CourceModule { get; set; }
         
         [ForeignKey(nameof(CourceId))]
         public Cource Cource { get; set; }

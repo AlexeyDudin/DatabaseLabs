@@ -17,14 +17,19 @@ namespace Application
         {
             Cource result = _courceRepository.GetCourceById(courceId);
             if (result == null)
-                throw new CourceNotFoudException($"Курс с идентификатором {courceId} не найден");
+                throw new CourceNotFoundException($"Курс с идентификатором {courceId} не найден");
             _courceRepository.DeleteCource(courceId);
             return result;
         }
 
-        public CourceStatusDataDto GetCourceStatus(GetCourceStatusParamsDto matherialParams)
+        public Cource GetCourceStatus(GetCourceStatusParamsDto matherialParams)
         {
-            throw new NotImplementedException();
+            Cource cource = _courceRepository.GetFullCourceInfoByStatus(matherialParams);
+            if (cource == null)
+                throw new CourceNotFoundException($"Курс с идентификатором {matherialParams.CourceId} не найден");
+            if (cource.CourceEnrollments == null || !cource.CourceEnrollments.Where(e => e.EnrollmentId == matherialParams.EnrollmentId).Any())
+                throw new CourceNotFoundException($"Курс с параметрами courceId = {matherialParams.CourceId} и enrollmentId = {matherialParams.EnrollmentId} не найден");
+            return _courceRepository.GetFullCourceInfoByStatus(matherialParams);
         }
 
         public Cource SaveCource(Cource cource)
@@ -32,9 +37,9 @@ namespace Application
             return _courceRepository.SaveCourse(cource);
         }
 
-        public SaveEnrollmentParamsDto SaveEnrollment(SaveEnrollmentParamsDto enrollmentParams)
+        public CourceEnrollment SaveEnrollment(CourceEnrollment enrollmentParams)
         {
-            throw new NotImplementedException();
+            return _courceRepository.SaveEnrollment(enrollmentParams);
         }
 
         public SaveMatherialStatusParamsDto SaveMatherial(SaveMatherialStatusParamsDto matherialParams)

@@ -8,5 +8,7 @@ namespace Infrastructure.Repository
         Cource SaveCourse(Cource saveCourseParams);
         Cource GetCourceById(Guid courceId);
         void DeleteCource(Guid courceId);
+        Cource GetFullCourceInfoByStatus(GetCourceStatusParamsDto matherialParams);
+        CourceEnrollment SaveEnrollment(CourceEnrollment enrollmentParam);
     }
 }

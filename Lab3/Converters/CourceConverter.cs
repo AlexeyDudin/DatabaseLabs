@@ -32,5 +32,16 @@ namespace Lab3.Converters
 
             return saveCourceParamsDto;
         }
+        public static CourceStatusDataDto ConvertToCourceStatusDataDto(this Cource cource, GetCourceStatusParamsDto param)
+        {
+            CourceStatusDataDto result = new CourceStatusDataDto();
+            var enrollment = cource.CourceEnrollments.Where(e => e.EnrollmentId == param.EnrollmentId).FirstOrDefault();
+            result.EnrollmentId = enrollment.EnrollmentId;
+            result.Duration = enrollment.CourceStatus.Duration;
+            result.Progress = enrollment.CourceStatus.Progress;
+            result.Modules = new List<ModuleStatusDataDto>();
+            //TODO надо подумать над моделью!!!
+            return result;
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace Lab3
         {
             try
             {
-                return new Responce(_courceService.GetCourceStatus(matherialParams), ResponceCode.Ok);
+                return new Responce(_courceService.GetCourceStatus(matherialParams).ConvertToCourceStatusDataDto(matherialParams), ResponceCode.Ok);
             }
             catch (Exception ex)
             {
@@ -54,7 +54,7 @@ namespace Lab3
         {
             try
             {
-                return new Responce(_courceService.SaveEnrollment(enrollmentParams), ResponceCode.Ok);
+                return new Responce(_courceService.SaveEnrollment(enrollmentParams.ConvertToCourceEnrollment()).ConvertToSaveEnrollmentParamsDto(), ResponceCode.Ok);
             }
             catch (Exception ex)
             {

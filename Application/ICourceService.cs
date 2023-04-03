@@ -6,8 +6,8 @@ namespace Application
     {
         public Cource SaveCource(Cource cource);
         public Cource DeleteCource(Guid courceId);
-        public CourceStatusDataDto GetCourceStatus(GetCourceStatusParamsDto matherialParams);
-        public SaveEnrollmentParamsDto SaveEnrollment(SaveEnrollmentParamsDto enrollmentParams);
+        public Cource GetCourceStatus(GetCourceStatusParamsDto matherialParams);
+        public CourceEnrollment SaveEnrollment(CourceEnrollment enrollmentParams);
         public SaveMatherialStatusParamsDto SaveMatherial(SaveMatherialStatusParamsDto matherialParams);
     }
 }
