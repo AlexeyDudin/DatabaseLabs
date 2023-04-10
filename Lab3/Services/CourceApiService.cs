@@ -22,7 +22,14 @@ namespace Lab3
             }
             catch (Exception ex)
             {
-                return new Responce(ex.Message, ResponceCode.Error);
+                string message = "";
+                var currentException = ex;
+                while (currentException != null)
+                {
+                    message += currentException.Message + "\n";
+                    currentException = currentException.InnerException;
+                }
+                return new Responce(message, ResponceCode.Error);
             }
         }
 
@@ -34,7 +41,14 @@ namespace Lab3
             }
             catch (Exception ex)
             {
-                return new Responce(ex.Message, ResponceCode.Error);
+                string message = "";
+                var currentException = ex;
+                while (currentException != null)
+                {
+                    message += currentException.Message + "\n";
+                    currentException = currentException.InnerException;
+                }
+                return new Responce(message, ResponceCode.Error);
             }
         }
 
@@ -46,7 +60,14 @@ namespace Lab3
             }
             catch (Exception ex)
             {
-                return new Responce(ex.Message, ResponceCode.Error);
+                string message = "";
+                var currentException = ex;
+                while (currentException != null)
+                {
+                    message += currentException.Message + "\n";
+                    currentException = currentException.InnerException;
+                }
+                return new Responce(message, ResponceCode.Error);
             }
         }
 
@@ -58,7 +79,14 @@ namespace Lab3
             }
             catch (Exception ex)
             {
-                return new Responce(ex.Message, ResponceCode.Error);
+                string message = "";
+                var currentException = ex;
+                while (currentException != null)
+                {
+                    message += currentException.Message + "\n";
+                    currentException = currentException.InnerException;
+                }
+                return new Responce(message, ResponceCode.Error);
             }
         }
 
@@ -70,7 +98,14 @@ namespace Lab3
             }
             catch (Exception ex)
             {
-                return new Responce(ex.Message, ResponceCode.Error);
+                string message = "";
+                var currentException = ex;
+                while (currentException != null)
+                {
+                    message += currentException.Message + "\n";
+                    currentException = currentException.InnerException;
+                }
+                return new Responce(message, ResponceCode.Error);
             }
         }
     }

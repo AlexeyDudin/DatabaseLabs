@@ -8,7 +8,9 @@ namespace InfrastructureLab4.Repositories
     {
         public BaseDbContext(DbContextOptions<BaseDbContext> dbContextOptions)
             : base(dbContextOptions)
-        { }
+        {
+            
+        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -16,6 +18,10 @@ namespace InfrastructureLab4.Repositories
             //builder.Entity<Cource>().HasIndex(c => c.Id);
 
             builder.ApplyConfiguration(new CourceConfiguration());
+            builder.ApplyConfiguration(new CourceEnrollmentConfiguration());
+            builder.ApplyConfiguration(new CourceMatherialConfiguration());
+            builder.ApplyConfiguration(new CourceModuleConfiguration());
+            builder.ApplyConfiguration(new CourceStatusConfiguration());
 
             //builder.ApplyConfiguration(new UserConfiguration());
             //builder.ApplyConfiguration(new RecipeConfiguration());

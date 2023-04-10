@@ -59,7 +59,7 @@ namespace Infrastructure.Converters
                 if (!string.IsNullOrWhiteSpace(line[4]))
                     courceMatherial.UpdatedAt = DateTime.Parse(line[4]);
                 courceMatherial.CourceModule = module;
-                module.Matherial = courceMatherial;
+                module.Matherials.Add(courceMatherial);
                 if (!string.IsNullOrEmpty(line[5]))
                     continue;
             }
@@ -80,7 +80,7 @@ namespace Infrastructure.Converters
             if (cource != null)
             {
                 var matherial = cource.CourceMatherials.Where(m => m.ModuleId == result.ModuleId).SingleOrDefault();
-                result.Matherial = matherial;
+                result.Matherials.Add(matherial);
                 matherial.CourceModule = result;
             }
             return result;
@@ -104,7 +104,7 @@ namespace Infrastructure.Converters
             {
                 var enrollment = cource.CourceEnrollments.Where(e => e.EnrollmentId == module.CourceModule.EnrollmentId).FirstOrDefault();
                 if (module.CourceModule != null)
-                    module.CourceModule.Enrollment = enrollment;
+                    module.CourceModule.Enrollments.Add(enrollment);
                 if (enrollment != null)
                     enrollment.CourceModule = module.CourceModule;
             }
@@ -124,7 +124,7 @@ namespace Infrastructure.Converters
                 return null;
 
             var enr = cource.CourceEnrollments.Where(ce => ce.EnrollmentId == result.EnrollmentId).SingleOrDefault();
-            result.CourceEnrollment = enr;
+            result.CourceEnrollments.Add(enr);
             enr.CourceStatus = result;
             return result;
         }

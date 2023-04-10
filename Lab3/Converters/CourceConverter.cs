@@ -16,7 +16,13 @@ namespace Lab3.Converters
                 UpdatedAt = DateTime.UtcNow,
                 CourceMatherials = saveCourceParamsDto.ConvertToCourceMatherial()
             };
-            
+
+            foreach (var matherial in cource.CourceMatherials)
+            {
+                matherial.Cource = cource;
+                matherial.CourceModule.Matherials.Add(matherial);
+            }
+
             return cource;
         }
 
@@ -27,13 +33,14 @@ namespace Lab3.Converters
                 CourceId = cource.Id,
                 ModuleIds = cource.CourceMatherials.ConvertToMatherialsId(),
                 RequiredModuleIds = cource.CourceMatherials.ConvertToRequiredMatherialsId(),
-
             };
 
             return saveCourceParamsDto;
         }
         public static CourceStatusDataDto ConvertToCourceStatusDataDto(this Cource cource, GetCourceStatusParamsDto param)
         {
+            if (cource == null)
+                return null;
             CourceStatusDataDto result = new CourceStatusDataDto();
             var enrollment = cource.CourceEnrollments.Where(e => e.EnrollmentId == param.EnrollmentId).FirstOrDefault();
             result.EnrollmentId = enrollment.EnrollmentId;

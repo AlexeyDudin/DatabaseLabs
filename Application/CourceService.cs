@@ -50,7 +50,7 @@ namespace Application
             var moduleStatus = _courceRepository.GetModuleStatus(matherialParams);
 
             moduleStatus.Duration += matherialParams.Duration;
-            if (moduleStatus.Matherial.IsRequired)
+            if (moduleStatus.Matherials.First().IsRequired)
                 moduleStatus.Progress = matherialParams.Progress;
             else
                 moduleStatus.Progress = 100;

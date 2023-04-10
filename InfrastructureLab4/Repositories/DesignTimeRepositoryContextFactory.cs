@@ -13,7 +13,7 @@ namespace InfrastructureLab4.Repositories
                .AddJsonFile("appsettings.json");
 
             var config = builder.Build();
-            var connectionString = config.GetConnectionString("DbConnection");
+            var connectionString = config.GetConnectionString("DbConnection4");
             var optionsBuilder = new DbContextOptionsBuilder<BaseDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
 

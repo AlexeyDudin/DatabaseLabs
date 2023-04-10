@@ -1,5 +1,6 @@
 ﻿using DomainLab3;
 using InfrastructureLab4.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace InfrastructureLab4.Repositories
 {
@@ -20,6 +21,8 @@ namespace InfrastructureLab4.Repositories
             _courceRepository = new Repository<Cource>(dbContext);
             _courceStatusRepository = new Repository<CourceStatus>(dbContext);
             _courceModuleRepository = new Repository<CourceModule>(dbContext);
+
+            _dbContext.Database.Migrate();
         }
 
         public void Commit()
