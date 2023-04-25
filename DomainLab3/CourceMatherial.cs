@@ -5,6 +5,7 @@ namespace DomainLab3
     [Table("cource_matherial")]
     public class CourceMatherial
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public Guid ModuleId { get; set; } = Guid.Empty;
         public Guid CourceId { get; set; } = Guid.Empty;
 

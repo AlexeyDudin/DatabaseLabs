@@ -9,7 +9,6 @@ namespace InfrastructureLab4.Repositories
         public BaseDbContext(DbContextOptions<BaseDbContext> dbContextOptions)
             : base(dbContextOptions)
         {
-            
         }
 
         protected override void OnModelCreating(ModelBuilder builder)

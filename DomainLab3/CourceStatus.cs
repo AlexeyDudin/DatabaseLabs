@@ -8,7 +8,7 @@ namespace DomainLab3
     {
         [Key]
         public Guid EnrollmentId { get; set; } = Guid.Empty;
-        public List<CourceEnrollment> CourceEnrollments { get; set; }
+        public List<CourceEnrollment> CourceEnrollments { get; set; } = new List<CourceEnrollment>();
         public int Progress { get; set; } = 0;
         public int Duration { get; set; } = 0;
     }

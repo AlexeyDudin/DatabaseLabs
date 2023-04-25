@@ -11,16 +11,17 @@ namespace Lab3.Converters
             Cource cource = new Cource()
             {
                 Id = saveCourceParamsDto.CourceId,
-                
+
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                CourceMatherials = saveCourceParamsDto.ConvertToCourceMatherial()
+                CourceMatherials = saveCourceParamsDto.ConvertToCourceMatherial(),
+                CourceEnrollments = new List<CourceEnrollment>()
             };
 
             foreach (var matherial in cource.CourceMatherials)
             {
                 matherial.Cource = cource;
-                matherial.CourceModule.Matherials.Add(matherial);
+                //matherial.CourceModule.Matherials.Add(matherial);
             }
 
             return cource;
@@ -46,8 +47,7 @@ namespace Lab3.Converters
             result.EnrollmentId = enrollment.EnrollmentId;
             result.Duration = enrollment.CourceStatus.Duration;
             result.Progress = enrollment.CourceStatus.Progress;
-            result.Modules = new List<ModuleStatusDataDto>();
-            //TODO надо подумать над моделью!!!
+            result.Modules = cource.CourceMatherials.ConvertToModuleStatusDataDtoList();
             return result;
         }
     }

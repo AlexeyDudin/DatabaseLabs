@@ -56,5 +56,19 @@ namespace Lab3.Converters
             }
             return result;
         }
+
+        public static List<ModuleStatusDataDto> ConvertToModuleStatusDataDtoList(this List<CourceMatherial> courceMatherials)
+        {
+            List<ModuleStatusDataDto> result = new List<ModuleStatusDataDto>();
+
+            foreach (var matherial in courceMatherials)
+            {
+                ModuleStatusDataDto moduleStatusDataDto = new ModuleStatusDataDto();
+                moduleStatusDataDto.ModuleId = matherial.ModuleId;
+                result.Add(moduleStatusDataDto);
+            }
+
+            return result;
+        }
     }
 }

@@ -281,47 +281,47 @@ namespace Infrastructure.Repository
 
         public Cource SaveCourse(Cource cource)
         {
-            try
-            {
-                connection.OpenConnection();
-                connection.BeginTransaction();
-
+            //TODO Переделать BeginTransaction за пределы Try\catch
+                try
                 {
-                    List<Parameter> insertCourseParameters = new List<Parameter>
+                    connection.OpenConnection();
+                    connection.BeginTransaction();
+
+                    {
+                        List<Parameter> insertCourseParameters = new List<Parameter>
                     {
                         new Parameter("courseId", cource.Id.ToString())
                     };
-                    connection.Execute(INSERT_COURCE, insertCourseParameters);
-                }
+                        connection.Execute(INSERT_COURCE, insertCourseParameters);
+                    }
 
-                for (var i = 0; i < cource.CourceMatherials.Count; i++)
+                    for (var i = 0; i < cource.CourceMatherials.Count; i++)
+                    {
+                        var insertModuleSql = INSERT_MODULE;
+
+                        insertModuleSql = insertModuleSql.Replace("@moduleId", "@moduleId" + i);
+                        insertModuleSql = insertModuleSql.Replace("@courseId", "@courseId" + i);
+                        insertModuleSql = insertModuleSql.Replace("@isRequired", "@isRequired" + i);
+
+                        List<Parameter> insertModuleParameters = new List<Parameter>();
+                        insertModuleParameters.Add(new Parameter("moduleId" + i, cource.CourceMatherials[i].ModuleId.ToString()));
+                        insertModuleParameters.Add(new Parameter("courseId" + i, cource.Id.ToString()));
+                        insertModuleParameters.Add(new Parameter("isRequired" + i, cource.CourceMatherials[i].IsRequired));
+                        connection.Execute(insertModuleSql, insertModuleParameters);
+                    }
+
+                    // some execute commands
+                    connection.Commit();
+                }
+                catch (Exception ex)
                 {
-                    var insertModuleSql = INSERT_MODULE;
-
-                    insertModuleSql = insertModuleSql.Replace("@moduleId", "@moduleId" + i);
-                    insertModuleSql = insertModuleSql.Replace("@courseId", "@courseId" + i);
-                    insertModuleSql = insertModuleSql.Replace("@isRequired", "@isRequired" + i);
-
-                    List<Parameter> insertModuleParameters = new List<Parameter>();
-                    insertModuleParameters.Add(new Parameter("moduleId" + i, cource.CourceMatherials[i].ModuleId.ToString()));
-                    insertModuleParameters.Add(new Parameter("courseId" + i, cource.Id.ToString()));
-                    insertModuleParameters.Add(new Parameter("isRequired" + i, cource.CourceMatherials[i].IsRequired));
-                    connection.Execute(insertModuleSql, insertModuleParameters);
+                    connection.Rollback();
+                    throw new Exception(ex.Message);
                 }
-
-                // some execute commands
-                connection.Commit();
-            }
-            catch (Exception ex)
-            {
-                connection.Rollback();
-                throw new Exception(ex.Message);
-            }
-            finally
-            {
-                connection.CloseConnection();
-            }
-
+                finally
+                {
+                    connection.CloseConnection();
+                }
             return cource;
         }
 
@@ -389,6 +389,7 @@ namespace Infrastructure.Repository
                         new Parameter("moduleId", courceModule.ModuleId.ToString()),
                     };
                     result = connection.Execute(GET_COURCE_MODULE_STATUS_BY_IDS, insertCourceParameters).ConvertToModule();
+                    //TODO if null
                 }
                 {
                     List<Parameter> insertCourceParameters = new List<Parameter>()

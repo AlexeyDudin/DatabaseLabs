@@ -37,14 +37,6 @@ namespace ApplicationLab4
 
         public Cource SaveCource(Cource cource)
         {
-            foreach (var matherial in cource.CourceMatherials)
-            {
-                var cm = matherial.CourceModule;
-
-                var module = _moduleRepository.Where(c => c.ModuleId == cm.ModuleId).FirstOrDefault();
-                if (module == null)
-                    _moduleRepository.Add(cm);
-            }
             _courceRepository.Add(cource);
             _unitOfWork.Commit();
             return cource;
@@ -52,12 +44,48 @@ namespace ApplicationLab4
 
         public CourceEnrollment SaveEnrollment(CourceEnrollment enrollmentParams)
         {
-            throw new NotImplementedException();
+            var cource = _courceRepository.Where(c => c.Id == enrollmentParams.CourceId).FirstOrDefault();
+            if (cource == null)
+                throw new NullReferenceException($"Курс с по ключу {enrollmentParams.CourceId} не найден");
+
+            var status = _statusRepository.Where(s => s.EnrollmentId == enrollmentParams.EnrollmentId).FirstOrDefault();
+            if (status == null)
+            {
+                _statusRepository.Add(enrollmentParams.CourceStatus);
+                status = enrollmentParams.CourceStatus;
+            }
+
+            enrollmentParams.Cource = cource;
+            enrollmentParams.CourceStatus = status;
+
+            foreach (var matherial in cource.CourceMatherials)
+            {
+                CourceModule newModuleToEnrollment = new CourceModule();
+                
+                newModuleToEnrollment.Matherials.Add(matherial);
+                matherial.CourceModule = newModuleToEnrollment;
+                
+                newModuleToEnrollment.Enrollments.Add(enrollmentParams);
+                enrollmentParams.CourceModule = newModuleToEnrollment;
+
+                newModuleToEnrollment.EnrollmentId = enrollmentParams.EnrollmentId;
+                newModuleToEnrollment.ModuleId = matherial.ModuleId;
+
+                _moduleRepository.Add(newModuleToEnrollment);
+            }
+
+            //var status = _statusRepository.Where(s => s.EnrollmentId == enrollmentParams.EnrollmentId).FirstOrDefault();
+            //if (status == null)
+            //    _statusRepository.Add(enrollmentParams.CourceStatus);
+            _unitOfWork.Commit();
+            return enrollmentParams;
         }
 
         public CourceModule SaveMatherial(CourceModule matherialParams)
         {
-            throw new NotImplementedException();
+            _moduleRepository.Add(matherialParams);
+            _unitOfWork.Commit();
+            return matherialParams;
         }
     }
 }

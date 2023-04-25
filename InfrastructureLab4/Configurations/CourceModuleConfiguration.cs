@@ -9,7 +9,8 @@ namespace InfrastructureLab4.Configurations
         public void Configure(EntityTypeBuilder<CourceModule> builder)
         {
             builder.ToTable("cource_module_status");
-            builder.HasKey(cm => cm.ModuleId);
+            builder.HasIndex(cms => cms.ModuleId);
+            builder.HasIndex(cms => cms.EnrollmentId);
         }
     }
 }

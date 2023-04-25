@@ -10,6 +10,9 @@ namespace Lab3.Converters
             CourceEnrollment result = new CourceEnrollment();
             result.EnrollmentId = saveEnrollmentParamsDto.EnrollmentId;
             result.CourceId = saveEnrollmentParamsDto.CourceId;
+            result.CourceStatus = new CourceStatus();
+            result.CourceStatus.CourceEnrollments.Add(result);
+            result.CourceStatus.EnrollmentId = saveEnrollmentParamsDto.EnrollmentId;
             return result;
         }
 

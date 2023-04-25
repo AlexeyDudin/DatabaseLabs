@@ -4,6 +4,7 @@ using InfrastructureLab4.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLab4.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230410162032_FixMatherials")]
+    partial class FixMatherials
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -83,10 +86,7 @@ namespace InfrastructureLab4.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ModuleId")
-                        .HasName("cource_module_id");
-
-                    b.HasIndex("CourceId");
+                    b.HasKey("ModuleId");
 
                     b.ToTable("cource_matherial", (string)null);
                 });
@@ -107,10 +107,6 @@ namespace InfrastructureLab4.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("EnrollmentId");
-
-                    b.HasIndex("EnrollmentId");
-
-                    b.HasIndex("ModuleId");
 
                     b.ToTable("cource_module_status", (string)null);
                 });
@@ -164,14 +160,14 @@ namespace InfrastructureLab4.Migrations
 
             modelBuilder.Entity("DomainLab3.CourceMatherial", b =>
                 {
-                    b.HasOne("DomainLab3.Cource", "Cource")
-                        .WithMany("CourceMatherials")
-                        .HasForeignKey("CourceId")
+                    b.HasOne("DomainLab3.CourceModule", "CourceModule")
+                        .WithMany("Matherials")
+                        .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DomainLab3.CourceModule", "CourceModule")
-                        .WithMany("Matherials")
+                    b.HasOne("DomainLab3.Cource", "Cource")
+                        .WithMany("CourceMatherials")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
