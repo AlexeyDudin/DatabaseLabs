@@ -13,6 +13,17 @@ namespace DomainLab3
         public Cource()
         { }
 
+        public Cource(bool isInitialize = false)
+        {
+            if (isInitialize)
+            {
+                Id = Guid.NewGuid();
+                Version = 0;
+                CreatedAt = DateTime.UtcNow;
+                UpdatedAt = DateTime.UtcNow;
+            }
+        }
+
         private Cource(ILazyLoader lazyLoader)
         {
             LazyLoader = lazyLoader;
@@ -21,10 +32,11 @@ namespace DomainLab3
         private ILazyLoader LazyLoader { get; set; }
 
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-        public int Version { get; set; } = 0;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Guid Id { get; set; }
+        public int Version { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
         public List<CourceMatherial> CourceMatherials { get => LazyLoader.Load(this, ref courceMatherials); set => courceMatherials = value; }
         public List<CourceEnrollment> CourceEnrollments { get => LazyLoader.Load(this, ref courceEnrollments); set => courceEnrollments = value; }
     }

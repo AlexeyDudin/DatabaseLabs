@@ -7,16 +7,31 @@ namespace DomainLab3
     [Table("cource_module")]
     public class CourceModule
     {
+        public CourceModule() { }
+        public CourceModule(bool isInitialize = false)
+        {
+            EnrollmentId = Guid.Empty;
+            ModuleId = Guid.Empty;
+            Progress = 0;
+            Duration = 0;
+        }
+
         [Key]
-        //public int Id { get; set; }
-        public Guid EnrollmentId { get; set; } = Guid.Empty;
-        public Guid ModuleId { get; set; } = Guid.Empty;
+        public long Id { get; set; }
 
-        public List<CourceEnrollment> Enrollments { get; set; } = new List<CourceEnrollment>();
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Guid EnrollmentId { get; set; }
+        public int EnrollmentKey { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public Guid ModuleId { get; set; }
 
-        public List<CourceMatherial> Matherials { get; set; } = new List<CourceMatherial>();
+        [ForeignKey(nameof(EnrollmentId))]
+        public CourceEnrollment Enrollment { get; set; }
 
-        public int Progress { get; set; } = 0;
-        public int Duration { get; set; } = 0;
+        [ForeignKey(nameof(ModuleId))]
+        public CourceMatherial Matherial { get; set; }
+
+        public int Progress { get; set; }
+        public int Duration { get; set; }
     }
 }

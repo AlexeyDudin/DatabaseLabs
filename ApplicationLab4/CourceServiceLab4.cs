@@ -24,6 +24,18 @@ namespace ApplicationLab4
         public Cource DeleteCource(Guid courceId)
         {
             Cource findCource = _courceRepository.Where(c => c.Id == courceId).First();
+            if (findCource == null)
+                throw new NullReferenceException($"Курс с по ключу {courceId} не найден");
+            foreach (var enrollment in findCource.CourceEnrollments)
+            {
+                _statusRepository.Delete(enrollment.CourceStatus);
+            }
+            findCource.CourceEnrollments.Clear();
+            foreach (var module in findCource.CourceMatherials)
+            {
+                _moduleRepository.Delete(module.CourceModule);
+            }
+            findCource.CourceMatherials.Clear();
             _courceRepository.Delete(findCource);
             _unitOfWork.Commit();
             return findCource;
@@ -32,6 +44,10 @@ namespace ApplicationLab4
         public Cource GetCourceStatus(GetCourceStatusParamsDto matherialParams)
         {
             Cource findCource = _courceRepository.Where(c => c.Id == matherialParams.CourceId && c.CourceEnrollments.Where(ce => ce.EnrollmentId == matherialParams.EnrollmentId).Any()).FirstOrDefault();
+            foreach (var enrollment in findCource.CourceEnrollments)
+            {
+                enrollment.CourceStatus = _statusRepository.Where(s => s.EnrollmentId == enrollment.EnrollmentId).FirstOrDefault();
+            }
             return findCource;
         }
 
@@ -62,10 +78,10 @@ namespace ApplicationLab4
             {
                 CourceModule newModuleToEnrollment = new CourceModule();
                 
-                newModuleToEnrollment.Matherials.Add(matherial);
-                matherial.CourceModule = newModuleToEnrollment;
+                newModuleToEnrollment.Matherial = matherial;
+                //matherial.CourceModule = newModuleToEnrollment;
                 
-                newModuleToEnrollment.Enrollments.Add(enrollmentParams);
+                newModuleToEnrollment.Enrollment = enrollmentParams;
                 enrollmentParams.CourceModule = newModuleToEnrollment;
 
                 newModuleToEnrollment.EnrollmentId = enrollmentParams.EnrollmentId;

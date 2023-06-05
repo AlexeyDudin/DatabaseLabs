@@ -10,10 +10,10 @@ namespace Lab3.Converters
             CourceModule module = new CourceModule();
             module.ModuleId = moduleGuid;
             module.EnrollmentId = Guid.Empty;
-            module.Enrollments = null;
+            module.Enrollment = null;
             module.Progress = 0;
             module.Duration = 0;
-            module.Matherials.Add(matherial);
+            module.Matherial = matherial;
 
             return module;
         }

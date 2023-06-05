@@ -58,8 +58,8 @@ namespace Infrastructure.Converters
                     courceMatherial.CreatedAt = DateTime.Parse(line[3]);
                 if (!string.IsNullOrWhiteSpace(line[4]))
                     courceMatherial.UpdatedAt = DateTime.Parse(line[4]);
-                courceMatherial.CourceModule = module;
-                module.Matherials.Add(courceMatherial);
+                //courceMatherial.CourceModule = module;
+                module.Matherial = courceMatherial;
                 if (!string.IsNullOrEmpty(line[5]))
                     continue;
             }
@@ -80,8 +80,8 @@ namespace Infrastructure.Converters
             if (cource != null)
             {
                 var matherial = cource.CourceMatherials.Where(m => m.ModuleId == result.ModuleId).SingleOrDefault();
-                result.Matherials.Add(matherial);
-                matherial.CourceModule = result;
+                result.Matherial = matherial;
+                //matherial.CourceModule = result;
             }
             return result;
         }
@@ -100,14 +100,14 @@ namespace Infrastructure.Converters
                 result.Add(courceEnrollment);
             }
 
-            foreach (var module in cource.CourceMatherials)
-            {
-                var enrollment = cource.CourceEnrollments.Where(e => e.EnrollmentId == module.CourceModule.EnrollmentId).FirstOrDefault();
-                if (module.CourceModule != null)
-                    module.CourceModule.Enrollments.Add(enrollment);
-                if (enrollment != null)
-                    enrollment.CourceModule = module.CourceModule;
-            }
+            //foreach (var module in cource.CourceMatherials)
+            //{
+            //    var enrollment = cource.CourceEnrollments.Where(e => e.EnrollmentId == module.CourceModule.EnrollmentId).FirstOrDefault();
+            //    if (module.CourceModule != null)
+            //        module.CourceModule.Enrollments.Add(enrollment);
+            //    if (enrollment != null)
+            //        enrollment.CourceModule = module.CourceModule;
+            //}
 
             return result;
         }

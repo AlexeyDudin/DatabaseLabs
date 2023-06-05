@@ -16,6 +16,9 @@ namespace InfrastructureLab4.Configurations
                 .HasOne(cm => cm.Cource)
                 .WithMany(c => c.CourceMatherials)
                 .HasForeignKey(r => r.CourceId);
+            builder
+                .HasOne(m => m.CourceModule)
+                .WithOne(cm => cm.Matherial);
 
         }
     }

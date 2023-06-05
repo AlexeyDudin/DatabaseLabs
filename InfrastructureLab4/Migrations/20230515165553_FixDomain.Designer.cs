@@ -4,6 +4,7 @@ using InfrastructureLab4.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InfrastructureLab4.Migrations
 {
     [DbContext(typeof(BaseDbContext))]
-    partial class BaseDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230515165553_FixDomain")]
+    partial class FixDomain
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,18 +56,12 @@ namespace InfrastructureLab4.Migrations
                     b.Property<Guid>("CourceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("CourceModuleId")
-                        .HasColumnType("bigint");
-
                     b.Property<Guid>("EnrollmentId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CourceId");
-
-                    b.HasIndex("CourceModuleId")
-                        .IsUnique();
 
                     b.HasIndex("EnrollmentId");
 
@@ -79,8 +76,8 @@ namespace InfrastructureLab4.Migrations
                     b.Property<Guid>("CourceId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<long>("CourceModuleId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("CourceModuleEnrollmentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -96,24 +93,17 @@ namespace InfrastructureLab4.Migrations
 
                     b.HasIndex("CourceId");
 
+                    b.HasIndex("CourceModuleEnrollmentId");
+
                     b.ToTable("cource_matherial", (string)null);
                 });
 
             modelBuilder.Entity("DomainLab3.CourceModule", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<int>("Duration")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("EnrollmentId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("EnrollmentKey")
+                    b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<Guid>("ModuleId")
@@ -122,10 +112,11 @@ namespace InfrastructureLab4.Migrations
                     b.Property<int>("Progress")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("EnrollmentId");
 
-                    b.HasIndex("ModuleId")
-                        .IsUnique();
+                    b.HasIndex("EnrollmentId");
+
+                    b.HasIndex("ModuleId");
 
                     b.ToTable("cource_module_status", (string)null);
                 });
@@ -158,9 +149,9 @@ namespace InfrastructureLab4.Migrations
                         .IsRequired();
 
                     b.HasOne("DomainLab3.CourceModule", "CourceModule")
-                        .WithOne("Enrollment")
-                        .HasForeignKey("DomainLab3.CourceEnrollment", "CourceModuleId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .WithMany("Enrollments")
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DomainLab3.CourceStatus", "CourceStatus")
@@ -184,18 +175,11 @@ namespace InfrastructureLab4.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DomainLab3.CourceModule", null)
+                        .WithMany("Matherials")
+                        .HasForeignKey("CourceModuleEnrollmentId");
+
                     b.Navigation("Cource");
-                });
-
-            modelBuilder.Entity("DomainLab3.CourceModule", b =>
-                {
-                    b.HasOne("DomainLab3.CourceMatherial", "Matherial")
-                        .WithOne("CourceModule")
-                        .HasForeignKey("DomainLab3.CourceModule", "ModuleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Matherial");
                 });
 
             modelBuilder.Entity("DomainLab3.Cource", b =>
@@ -205,16 +189,11 @@ namespace InfrastructureLab4.Migrations
                     b.Navigation("CourceMatherials");
                 });
 
-            modelBuilder.Entity("DomainLab3.CourceMatherial", b =>
-                {
-                    b.Navigation("CourceModule")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DomainLab3.CourceModule", b =>
                 {
-                    b.Navigation("Enrollment")
-                        .IsRequired();
+                    b.Navigation("Enrollments");
+
+                    b.Navigation("Matherials");
                 });
 
             modelBuilder.Entity("DomainLab3.CourceStatus", b =>

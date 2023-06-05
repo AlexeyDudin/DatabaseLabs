@@ -7,14 +7,10 @@ namespace Lab3.Converters
     {
         public static CourceMatherial GetNewCourceMatherial(this Guid guid, bool isRequired)
         {
-            CourceMatherial newCourceMatherial = new CourceMatherial()
-            {
-                ModuleId = guid,
-                IsRequired = isRequired,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-            newCourceMatherial.CourceModule = guid.ConvertToCourceModuleStatus(newCourceMatherial);
+            CourceMatherial newCourceMatherial = new CourceMatherial(true);
+            newCourceMatherial.ModuleId = guid;
+            newCourceMatherial.IsRequired = isRequired;
+            //newCourceMatherial.CourceModule = null; //guid.ConvertToCourceModuleStatus(newCourceMatherial);
             return newCourceMatherial;
         }
 

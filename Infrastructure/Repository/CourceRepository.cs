@@ -202,7 +202,7 @@ namespace Infrastructure.Repository
                     {
                         new Parameter("moduleId", matherial.ModuleId.ToString())
                     };
-                    matherial.CourceModule = connection.Execute(GET_COURCE_MODULE_STATUS_BY_ID, insertCourseParameters).ConvertToModule(cource);
+                    //matherial.CourceModule = connection.Execute(GET_COURCE_MODULE_STATUS_BY_ID, insertCourseParameters).ConvertToModule(cource);
                 }
             }
             catch (Exception ex)

@@ -20,8 +20,11 @@ namespace InfrastructureLab4.Configurations
                 .HasForeignKey(r => r.EnrollmentId);
             builder
                 .HasOne(e => e.CourceModule)
-                .WithMany(cm => cm.Enrollments)
-                .HasForeignKey(r => r.EnrollmentId);
+                .WithOne(cm => cm.Enrollment);
+            //builder
+            //    .HasOne(e => e.CourceModule)
+            //    .WithMany(cm => cm.Enrollments)
+            //    .HasForeignKey(r => r.EnrollmentId);
         }
     }
 }
